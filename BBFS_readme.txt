@@ -1,148 +1,62 @@
 This manual explain how to install BBFS from scratch.
-The BBFS program is application for backuping files and folders.
-The BBFS system done on ruby language so ruby should be installed. 
+The BBFS program is application for backuping files and folders. 
+There is two application for BBFS system: backup_server is server run on machine where files is backuped,
+                                          content_server is application that run on machine from where files is copied.
+So you need to prepare two computers(it can be only one computer if you want that data will be copied from and backuped to the same computer).								  
 
-1. Installing ruby devkit (required by 'algorithms' gem) and rubygems (if not installed)
+The BBFS system done on ruby language so ruby should be installed on two computers.
+
+1. Installing ruby, devkit (required by 'algorithms' gem and installed only on windows) and rubygems (if not installed)
 	a. check if ruby and rubygems installed on you computer "ruby -v", "gem -v"
 	b. installing ruby and gemspec 
-           On windows: go to http://rubyinstaller.org/ and download and install ruby. 
+           On Windows: go to http://rubyinstaller.org/ and download and install ruby. 
            On Linux: sudo apt-get install ruby1.9.3
 	c. installing devkit 
-           On windows: go to http://rubyinstaller.org/ and download devkit, follow instructions from https://github.com/oneclick/rubyinstaller/wiki/Development-Kit
-           On Linux: no need
+           On Windows: go to http://rubyinstaller.org/ and download devkit, follow instructions from https://github.com/oneclick/rubyinstaller/wiki/Development-Kit
+           On Linux: no need todo it.
 	
-2. Installing all content_server.
-   'gem install content_server' 
-   
-   
-   
-   
-   
+2. On machine intendend to be content_server.
+   a. Install content server by 'gem install content_server'
+   b. Create configuration file for content server which should be located
+       in ~/.bbfs/etc/file_monitoring.yml
+the content of the file is:
+------- begin of file_monitoring.yml --------
+paths:
+   - path: ~/.bbfs/test_files  # <=== replace with your local dir.
+     scan_period: 1
+     stable_state: 5
+------- end of file_monitoring.yml --------
+  
+  c. run the content_server by "content_server --remote_server='backup_address'"
+	   
+3. On machine itended to be backup_server.
+  a. Install backup_server by 'gem install content_data'
+  b. Create configuration file for backup server which should be located
+       in ~/.bbfs/etc/backup_file_monitoring.yml
+       File content:
+------- begin of backup_file_monitoring.yml --------
+paths:
+   - path:  ~/.bbfs/backup_data  # <=== replace with your local dir.
+     scan_period: 1
+     stable_state: 5
+------- end of backup_file_monitoring.yml --------
+
+c. run the backup_server by "backup_server --remote_server='content_address' --backup_destination_folder=~/.bbfs/backup_data
+"
+
+4. Explanation about file_monitoring.yml and backup_file_monitoring.yml
+       configuration files:
+
+    	"path:" - say to program which folder to scan recursively in order to find
+    	          new/changed files and folders.
+    	"scan_period:" - how much time in seconds passed before two consecutive scans
+    	                 for files and directories.
+		"stable_state:" - how many scan_period passed until the file is considered
+		                  stable.
+
 Uninstalling:
-1. unistall all gems by: 'gem list | cut -d" " -f1 | xargs gem uninstall -aIx'
+
+1. unistall all gems by: 'gem list | cut -d" " -f1 | xargs gem uninstall -aIx' 
 2. uninstall ruby (from ruby193/unins000.exe) and delete ruby193 folder.
 
 
-In Linux
-
-1. Install ruby in windows.
-bi@YOUR-ECA82B1503 /c/Ruby193/devkit
-$ gem install content_data content_server file_copy file_indexing file_monitoring_win32 file_utils log networking params
-Fetching: params-0.0.8.gem (100%)
-Fetching: log-0.0.8.gem (100%)
-Fetching: content_data-0.0.8.gem (100%)
-Successfully installed params-0.0.8
-Successfully installed log-0.0.8
-Successfully installed content_data-0.0.8
-Fetching: file_indexing-0.0.8.gem (100%)
-Fetching: algorithms-0.5.0.gem (100%)
-Temporarily enhancing PATH to include DevKit...
-Building native extensions.  This could take a while...
-Fetching: daemons-1.1.9.gem (100%)
-Fetching: file_monitoring-0.0.8.gem (100%)
-Fetching: networking-0.0.8.gem (100%)
-Fetching: win32-api-1.4.8-x86-mingw32.gem (100%)
-Fetching: windows-api-0.4.2.gem (100%)
-Fetching: windows-pr-1.2.2.gem (100%)
-Fetching: win32-service-0.7.2-x86-mingw32.gem (100%)
-Fetching: sys-uname-0.9.0-x86-mingw32.gem (100%)
-Fetching: run_in_background-0.0.8.gem (100%)
-Fetching: content_server-0.0.8.gem (100%)
-Successfully installed file_indexing-0.0.8
-Successfully installed algorithms-0.5.0
-Successfully installed daemons-1.1.9
-Successfully installed file_monitoring-0.0.8
-Successfully installed networking-0.0.8
-Successfully installed win32-api-1.4.8-x86-mingw32
-Successfully installed windows-api-0.4.2
-Successfully installed windows-pr-1.2.2
-Successfully installed win32-service-0.7.2-x86-mingw32
-Successfully installed sys-uname-0.9.0-x86-mingw32
-Successfully installed run_in_background-0.0.8
-Successfully installed content_server-0.0.8
-Fetching: file_copy-0.0.2.gem (100%)
-Successfully installed file_copy-0.0.2
-Successfully installed file_indexing-0.0.8
-ERROR:  Could not find a valid gem 'file_monitoring_win32' (>= 0) in any repository
-ERROR:  Possible alternatives: file_monitoring, file_monitor
-Fetching: file_utils-1.0.4.gem (100%)
-Successfully installed file_utils-1.0.4
-Successfully installed log-0.0.8
-Successfully installed networking-0.0.8
-Successfully installed params-0.0.8
-21 gems installed
-Installing ri documentation for params-0.0.8...
-Installing ri documentation for log-0.0.8...
-Installing ri documentation for content_data-0.0.8...
-Installing ri documentation for file_indexing-0.0.8...
-Installing ri documentation for algorithms-0.5.0...
-Installing ri documentation for daemons-1.1.9...
-Installing ri documentation for file_monitoring-0.0.8...
-Installing ri documentation for networking-0.0.8...
-Installing ri documentation for win32-api-1.4.8-x86-mingw32...
-Installing ri documentation for windows-api-0.4.2...
-Installing ri documentation for windows-pr-1.2.2...
-Installing ri documentation for win32-service-0.7.2-x86-mingw32...
-Installing ri documentation for sys-uname-0.9.0-x86-mingw32...
-Installing ri documentation for run_in_background-0.0.8...
-Installing ri documentation for content_server-0.0.8...
-Installing ri documentation for file_copy-0.0.2...
-Installing ri documentation for file_indexing-0.0.8...
-Installing ri documentation for file_utils-1.0.4...
-Installing ri documentation for log-0.0.8...
-Installing ri documentation for networking-0.0.8...
-Installing ri documentation for params-0.0.8...
-Installing RDoc documentation for params-0.0.8...
-Installing RDoc documentation for log-0.0.8...
-Installing RDoc documentation for content_data-0.0.8...
-Installing RDoc documentation for file_indexing-0.0.8...
-Installing RDoc documentation for algorithms-0.5.0...
-Installing RDoc documentation for daemons-1.1.9...
-Installing RDoc documentation for file_monitoring-0.0.8...
-Installing RDoc documentation for networking-0.0.8...
-Installing RDoc documentation for win32-api-1.4.8-x86-mingw32...
-Installing RDoc documentation for windows-api-0.4.2...
-Installing RDoc documentation for windows-pr-1.2.2...
-Installing RDoc documentation for win32-service-0.7.2-x86-mingw32...
-Installing RDoc documentation for sys-uname-0.9.0-x86-mingw32...
-Installing RDoc documentation for run_in_background-0.0.8...
-Installing RDoc documentation for content_server-0.0.8...
-Installing RDoc documentation for file_copy-0.0.2...
-Installing RDoc documentation for file_indexing-0.0.8...
-Installing RDoc documentation for file_utils-1.0.4...
-Installing RDoc documentation for log-0.0.8...
-Installing RDoc documentation for networking-0.0.8...
-Installing RDoc documentation for params-0.0.8...
-
-
-
-install ruby in linux:
-
- sudo gem install content_server
-Fetching: params-0.0.9.gem (100%)
-Fetching: log-0.0.9.gem (100%)
-Fetching: content_data-0.0.9.gem (100%)
-Fetching: file_indexing-0.0.9.gem (100%)
-Fetching: algorithms-0.5.0.gem (100%)
-Building native extensions.  This could take a while...
-Fetching: daemons-1.1.9.gem (100%)
-Fetching: file_monitoring-0.0.9.gem (100%)
-Fetching: networking-0.0.9.gem (100%)
-Fetching: win32-api-1.4.8.gem (100%)
-Building native extensions.  This could take a while...
-ERROR:  Error installing content_server:
-	ERROR: Failed to build gem native extension.
-
-        /usr/bin/ruby1.9.1 extconf.rb
-checking for strncpy_s()... no
-creating Makefile
-
-make
-compiling win32/api.c
-win32/api.c:2:21: fatal error: windows.h: No such file or directory
-compilation terminated.
-make: *** [api.o] Error 1
-
-
-Gem files will remain installed in /var/lib/gems/1.9.1/gems/win32-api-1.4.8 for inspection.
-Results logged to /var/lib/gems/1.9.1/gems/win32-api-1.4.8/ext/gem_make.out
